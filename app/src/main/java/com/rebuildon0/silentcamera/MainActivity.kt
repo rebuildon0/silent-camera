@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
     private var flashMode = ImageCapture.FLASH_MODE_OFF
     private var snapWhileRecordingSupported = true
     private var multiTouch = false
+    private var flung = false
     private var sensorWide: Boolean? = null
 
     private var zoomPresets: List<Float> = emptyList()
@@ -161,10 +162,12 @@ class MainActivity : AppCompatActivity() {
                 val dy = e2.y - e1.y
                 val minDistance = 80 * resources.displayMetrics.density
                 if (abs(dx) > abs(dy) && abs(dx) > minDistance) {
+                    flung = true
                     setMode(if (dx < 0) Mode.VIDEO else Mode.PHOTO)
                     return true
                 }
                 if (abs(dy) > abs(dx) && abs(dy) > minDistance) {
+                    flung = true
                     switchCamera()
                     return true
                 }
@@ -172,10 +175,14 @@ class MainActivity : AppCompatActivity() {
             }
         })
         previewView.setOnTouchListener { _, event ->
-            if (event.actionMasked == MotionEvent.ACTION_DOWN) multiTouch = false
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                multiTouch = false
+                flung = false
+            }
             if (event.pointerCount > 1) multiTouch = true
             gestureDetector.onTouchEvent(event)
-            false
+            // Swallow the final ACTION_UP of a swipe or pinch so PreviewView doesn't treat it as tap-to-focus.
+            event.actionMasked == MotionEvent.ACTION_UP && (flung || multiTouch)
         }
 
         applyMode()
