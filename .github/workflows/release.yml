@@ -1,0 +1,68 @@
+name: Build and release APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VERSION_CODE: ${{ github.run_number }}
+      VERSION_NAME: 1.0.${{ github.run_number }}
+      TAG: v1.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Decode signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.p12"
+
+      - name: Build release APK
+        env:
+          SIGNING_STORE_FILE: ${{ runner.temp }}/release.p12
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: silentcamera
+        run: gradle --no-daemon assembleRelease
+
+      - name: Verify signature
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --print-certs app/build/outputs/apk/release/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk silent-camera.apk
+
+      - name: Write version.json
+        env:
+          NOTES: ${{ github.event.head_commit.message }}
+        run: |
+          jq -n \
+            --argjson code "$VERSION_CODE" \
+            --arg name "$VERSION_NAME" \
+            --arg url "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/silent-camera.apk" \
+            --arg notes "${NOTES:-}" \
+            '{versionCode: $code, versionName: $name, apkUrl: $url, notes: $notes}' > version.json
+          cat version.json
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ github.event.head_commit.message }}
+        run: |
+          gh release create "$TAG" silent-camera.apk version.json \
+            --title "無音カメラ $VERSION_NAME" \
+            --notes "${NOTES:-手動ビルド}" \
+            --latest

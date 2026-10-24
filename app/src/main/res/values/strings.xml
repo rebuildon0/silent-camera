@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">無音カメラ</string>
+    <string name="gallery">撮影した写真・動画</string>
+    <string name="settings">設定</string>
+    <string name="mode_photo">写真</string>
+    <string name="mode_video">動画</string>
+    <string name="shutter">シャッター</string>
+    <string name="switch_camera">カメラ切替</string>
+    <string name="flash">フラッシュ</string>
+    <string name="mic">マイク</string>
+    <string name="open_gallery">ギャラリー</string>
+    <string name="back">戻る</string>
+    <string name="play">再生</string>
+    <string name="camera_permission_needed">カメラの権限が必要です</string>
+    <string name="mic_permission_denied">マイクの権限がないため音声なしで録画します</string>
+    <string name="photo_saved">保存しました</string>
+    <string name="capture_failed">撮影に失敗しました: %1$s</string>
+    <string name="record_failed">録画に失敗しました: %1$s</string>
+    <string name="mic_on">動画の音声：録音する</string>
+    <string name="mic_off">動画の音声：録音しない</string>
+    <string name="empty_gallery">まだ撮影したものがありません</string>
+    <string name="version_label">バージョン %1$s（%2$d）</string>
+    <string name="check_update">更新を確認</string>
+    <string name="update_checking">更新を確認しています…</string>
+    <string name="update_latest">最新版です</string>
+    <string name="update_available">新しいバージョン %1$s があります</string>
+    <string name="update_install">ダウンロードして更新</string>
+    <string name="update_downloading">ダウンロード中… %1$d%%</string>
+    <string name="update_failed">更新の確認に失敗しました: %1$s</string>
+    <string name="update_allow_install">「この提供元のアプリを許可」をオンにして戻ってください</string>
+    <string name="update_note">更新はGitHubの最新リリースから取得します。</string>
+</resources>
