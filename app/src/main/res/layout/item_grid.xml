@@ -32,4 +32,15 @@
         android:shadowRadius="3"
         android:textColor="@android:color/white"
         android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/check"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="6dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_check_circle"
+        android:visibility="gone"
+        app:tint="#FFD54F" />
 </com.rebuildon0.silentcamera.SquareFrameLayout>

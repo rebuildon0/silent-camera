@@ -70,6 +70,15 @@ object MediaRepo {
         }
     }
 
+    /** Deletes items this app owns. Returns the ones that could not be deleted directly. */
+    fun delete(context: Context, items: List<MediaItem>): List<MediaItem> = items.filter { item ->
+        try {
+            context.contentResolver.delete(item.uri, null, null) == 0
+        } catch (e: SecurityException) {
+            true
+        }
+    }
+
     fun thumbnail(context: Context, uri: Uri, sizePx: Int): Bitmap? = runCatching {
         context.contentResolver.loadThumbnail(uri, Size(sizePx, sizePx), null)
     }.getOrNull()

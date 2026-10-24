@@ -30,6 +30,9 @@ class ViewerActivity : AppCompatActivity() {
     private lateinit var pager: ViewPager2
     private lateinit var counter: TextView
     private var adapter: PageAdapter? = null
+    private var items: List<MediaItem> = emptyList()
+
+    private val deleter = MediaDeleter(this) { load(pager.currentItem) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,25 +40,36 @@ class ViewerActivity : AppCompatActivity() {
         pager = findViewById(R.id.pager)
         counter = findViewById(R.id.counter)
         findViewById<ImageButton>(R.id.backButton).setOnClickListener { finish() }
+        findViewById<ImageButton>(R.id.deleteButton).setOnClickListener {
+            adapter?.stopPlayback()
+            items.getOrNull(pager.currentItem)?.let { deleter.confirmAndDelete(listOf(it)) }
+        }
+        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                adapter?.stopPlayback()
+                counter.text = "${position + 1} / ${items.size}"
+            }
+        })
 
-        val start = intent.getIntExtra(EXTRA_POSITION, 0)
+        load(intent.getIntExtra(EXTRA_POSITION, 0))
+    }
+
+    private fun load(position: Int) {
         val maxDim = resources.displayMetrics.let { max(it.widthPixels, it.heightPixels) }
         lifecycleScope.launch {
-            val items = withContext(Dispatchers.IO) { MediaRepo.loadAll(this@ViewerActivity) }
-            if (items.isEmpty()) {
+            val loaded = withContext(Dispatchers.IO) { MediaRepo.loadAll(this@ViewerActivity) }
+            if (loaded.isEmpty()) {
                 finish()
                 return@launch
             }
-            val pageAdapter = PageAdapter(items, lifecycleScope, maxDim)
+            adapter?.stopPlayback()
+            items = loaded
+            val pageAdapter = PageAdapter(loaded, lifecycleScope, maxDim)
             adapter = pageAdapter
             pager.adapter = pageAdapter
-            pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    pageAdapter.stopPlayback()
-                    counter.text = "${position + 1} / ${items.size}"
-                }
-            })
-            pager.setCurrentItem(start.coerceIn(0, items.size - 1), false)
+            val target = position.coerceIn(0, loaded.size - 1)
+            pager.setCurrentItem(target, false)
+            counter.text = "${target + 1} / ${loaded.size}"
         }
     }
 
