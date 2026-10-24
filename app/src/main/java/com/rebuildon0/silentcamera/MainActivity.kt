@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
     private var flashMode = ImageCapture.FLASH_MODE_OFF
     private var snapWhileRecordingSupported = true
     private var multiTouch = false
+    private var sensorWide: Boolean? = null
 
     private var zoomPresets: List<Float> = emptyList()
     private var zoomRange: Pair<Float, Float>? = null
@@ -423,6 +424,9 @@ class MainActivity : AppCompatActivity() {
             Ratio.FULL -> longSide / shortSide > 1.55f
             else -> mode == Mode.VIDEO
         }
+        // Changing selectors rebinds the camera (and would stop a recording), so only do it when needed.
+        if (wide == sensorWide || recording != null) return
+        sensorWide = wide
         val selector = ResolutionSelector.Builder()
             .setAspectRatioStrategy(
                 if (wide) AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
