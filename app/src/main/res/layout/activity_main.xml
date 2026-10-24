@@ -9,7 +9,7 @@
         android:id="@+id/previewView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:scaleType="fitCenter"
+        app:scaleType="fillCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,6 +79,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/ratioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/timer_bg_neutral"
+        android:contentDescription="@string/ratio"
+        android:gravity="center"
+        android:minWidth="56dp"
+        android:paddingHorizontal="12dp"
+        android:text="3:4"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/zoomBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/modeBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <LinearLayout
         android:id="@+id/modeBar"
         android:layout_width="wrap_content"
@@ -141,6 +169,20 @@
         android:background="@drawable/round_button_bg"
         android:contentDescription="@string/switch_camera"
         android:src="@drawable/ic_cameraswitch"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@id/shutterButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/shutterButton"
+        app:layout_constraintTop_toTopOf="@id/shutterButton" />
+
+    <ImageButton
+        android:id="@+id/snapButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/round_button_bg"
+        android:contentDescription="@string/take_photo"
+        android:src="@drawable/ic_photo_camera"
+        android:visibility="gone"
         app:tint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="@id/shutterButton"
         app:layout_constraintEnd_toEndOf="parent"

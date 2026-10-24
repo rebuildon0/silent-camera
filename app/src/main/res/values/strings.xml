@@ -30,4 +30,13 @@
     <string name="update_failed">更新の確認に失敗しました: %1$s</string>
     <string name="update_allow_install">「この提供元のアプリを許可」をオンにして戻ってください</string>
     <string name="update_note">更新はGitHubの最新リリースから取得します。</string>
+    <string name="ratio">画面比率</string>
+    <string name="take_photo">写真を撮る</string>
+    <string name="camera_failed">カメラの設定に失敗しました: %1$s</string>
+    <string name="delete">削除</string>
+    <string name="cancel">キャンセル</string>
+    <string name="select_all">すべて選択</string>
+    <string name="selected_count">%1$d件選択</string>
+    <string name="delete_confirm">%1$d件を削除しますか？\nゴミ箱には移らず、完全に削除されます。</string>
+    <string name="delete_failed">削除できませんでした</string>
 </resources>

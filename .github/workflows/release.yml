@@ -2,7 +2,7 @@ name: Build and release APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 
 permissions:
@@ -46,6 +46,7 @@ jobs:
           cp app/build/outputs/apk/release/app-release.apk silent-camera.apk
 
       - name: Write version.json
+        if: github.ref == 'refs/heads/main'
         env:
           NOTES: ${{ github.event.head_commit.message }}
         run: |
@@ -59,6 +60,7 @@ jobs:
           cat version.json
 
       - name: Publish release
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
           NOTES: ${{ github.event.head_commit.message }}
