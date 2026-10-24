@@ -49,11 +49,12 @@ jobs:
         env:
           NOTES: ${{ github.event.head_commit.message }}
         run: |
+          NOTES=$(printf '%s' "${NOTES:-}" | head -n1)
           jq -n \
             --argjson code "$VERSION_CODE" \
             --arg name "$VERSION_NAME" \
             --arg url "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/silent-camera.apk" \
-            --arg notes "${NOTES:-}" \
+            --arg notes "$NOTES" \
             '{versionCode: $code, versionName: $name, apkUrl: $url, notes: $notes}' > version.json
           cat version.json
 

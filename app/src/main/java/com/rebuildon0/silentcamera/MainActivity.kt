@@ -138,26 +138,32 @@ class MainActivity : AppCompatActivity() {
         ).build()
 
         shutterButton.isEnabled = false
-        showCaptureFeedback()
-        controller.takePicture(
-            options,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    shutterButton.isEnabled = true
-                    refreshThumbnail()
-                }
+        try {
+            controller.takePicture(
+                options,
+                ContextCompat.getMainExecutor(this),
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        shutterButton.isEnabled = true
+                        refreshThumbnail()
+                    }
 
-                override fun onError(exception: ImageCaptureException) {
-                    shutterButton.isEnabled = true
-                    Toast.makeText(
-                        this@MainActivity,
-                        getString(R.string.capture_failed, exception.message ?: ""),
-                        Toast.LENGTH_LONG,
-                    ).show()
-                }
-            },
-        )
+                    override fun onError(exception: ImageCaptureException) {
+                        shutterButton.isEnabled = true
+                        showError(R.string.capture_failed, exception.message)
+                    }
+                },
+            )
+            showCaptureFeedback()
+        } catch (e: IllegalStateException) {
+            // Camera not ready yet (e.g. tapped right after launch).
+            shutterButton.isEnabled = true
+            showError(R.string.capture_failed, e.message)
+        }
+    }
+
+    private fun showError(messageRes: Int, detail: String?) {
+        Toast.makeText(this, getString(messageRes, detail ?: ""), Toast.LENGTH_LONG).show()
     }
 
     /** Visual-only capture feedback (no sound). */
@@ -187,7 +193,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         shutterButton.isEnabled = false
-        recording = controller.startRecording(output, audio, ContextCompat.getMainExecutor(this)) { event ->
+        recording = try {
+            startRecording(output, audio)
+        } catch (e: IllegalStateException) {
+            // Camera not ready yet (e.g. tapped right after launch).
+            shutterButton.isEnabled = true
+            showError(R.string.record_failed, e.message)
+            null
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun startRecording(output: MediaStoreOutputOptions, audio: AudioConfig): Recording =
+        controller.startRecording(output, audio, ContextCompat.getMainExecutor(this)) { event ->
             when (event) {
                 is VideoRecordEvent.Start -> {
                     shutterButton.isEnabled = true
@@ -212,7 +230,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
 
     private fun setRecordingUi(isRecording: Boolean) {
         shutterButton.setBackgroundResource(
